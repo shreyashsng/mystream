@@ -10,7 +10,6 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
-  // If no session and trying to access protected routes
   if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/', req.url))
   }

@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { X, Maximize2, Minimize2 } from 'lucide-react'
 import VideoPlayerLayout from './VideoPlayerLayout'
 import { ENDPOINTS } from '@/utils/constants'
 
@@ -155,6 +154,12 @@ export default function TVShowModal({ imdbId, title, totalSeasons, onClose }: TV
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center py-12 text-red-500">
+            {error}
           </div>
         )}
       </div>
