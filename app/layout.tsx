@@ -1,15 +1,14 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import './globals.css'
+import { Inter } from 'next/font/google'
+import { AuthProvider } from '@/contexts/AuthContext'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: "MyStream",
-  description: "Stream your favorite movies and TV shows",
-};
+export const metadata = {
+  title: 'MyStream',
+  description: 'Stream your favorite movies and TV shows',
+}
 
 export default function RootLayout({
   children,
@@ -24,5 +23,5 @@ export default function RootLayout({
         </ErrorBoundary>
       </body>
     </html>
-  );
+  )
 }
