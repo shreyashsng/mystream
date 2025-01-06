@@ -5,7 +5,8 @@ const nextConfig = {
     unoptimized: process.env.NODE_ENV === 'development'
   },
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: true,
+    dirs: ['app', 'components', 'utils']
   },
   typescript: {
     ignoreBuildErrors: true
