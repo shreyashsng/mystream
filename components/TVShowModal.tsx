@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { X, Maximize2, Minimize2 } from 'lucide-react'
 import VideoPlayerLayout from './VideoPlayerLayout'
 import { ENDPOINTS } from '@/utils/constants'
 
@@ -28,24 +29,19 @@ export default function TVShowModal({ imdbId, title, totalSeasons, onClose }: TV
   const [seasons, setSeasons] = useState<Season[]>([])
   const [currentSeason, setCurrentSeason] = useState(1)
   const [currentEpisode, setCurrentEpisode] = useState(1)
-  const [error, setError] = useState<string | null>(null)
 
   // Fetch episodes for current season
   useEffect(() => {
     const fetchSeasonDetails = async () => {
       try {
         setIsLoading(true)
-        setError(null)
         const response = await fetch(
           `https://www.omdbapi.com/?i=${imdbId}&Season=${currentSeason}&apikey=${process.env.NEXT_PUBLIC_OMDB_API_KEY}`
         )
         const data = await response.json()
         
-        if (data.Error) {
-          throw new Error(data.Error)
-        }
-        
         if (data.Episodes) {
+          // Update or add season data
           setSeasons(prev => {
             const seasonExists = prev.some(s => s.seasonNumber === currentSeason)
             if (seasonExists) {
@@ -59,7 +55,6 @@ export default function TVShowModal({ imdbId, title, totalSeasons, onClose }: TV
         }
       } catch (error) {
         console.error('Error fetching season details:', error)
-        setError(error instanceof Error ? error.message : 'Failed to load episodes')
       } finally {
         setIsLoading(false)
       }
@@ -154,12 +149,6 @@ export default function TVShowModal({ imdbId, title, totalSeasons, onClose }: TV
                 </div>
               )}
             </div>
-          </div>
-        )}
-
-        {error && (
-          <div className="text-center py-12 text-red-500">
-            {error}
           </div>
         )}
       </div>

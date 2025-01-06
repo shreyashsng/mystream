@@ -1,6 +1,6 @@
 'use client'
+import { useState } from 'react'
 import { X, History, Trash2 } from 'lucide-react'
-import Image from 'next/image'
 
 interface Movie {
   Title: string
@@ -85,12 +85,10 @@ export default function WatchHistoryModal({
                   className="group relative aspect-[2/3] rounded-lg overflow-hidden 
                            hover:ring-2 ring-red-600 transition-all duration-300"
                 >
-                  <Image
+                  <img
                     src={item.movie_poster !== 'N/A' ? item.movie_poster : '/no-poster.png'}
                     alt={item.movie_title}
-                    width={96}
-                    height={128}
-                    className="object-cover rounded"
+                    className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 
                                to-transparent opacity-0 group-hover:opacity-100 transition-opacity

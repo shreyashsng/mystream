@@ -1,24 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['m.media-amazon.com', 'img.omdbapi.com'],
-    unoptimized: process.env.NODE_ENV === 'development',
+    domains: [
+      'm.media-amazon.com', // OMDB images
+      'image.tmdb.org',     // TMDB images if used
+    ],
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/stream/:path*',
-        destination: 'https://vidsrc.xyz/embed/:path*',
-      },
-    ]
-  },
+  // Add CORS headers for video player
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
         ],
       },
     ]

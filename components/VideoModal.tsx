@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import VideoPlayerLayout from './VideoPlayerLayout'
 import { ENDPOINTS } from '@/utils/constants'
 
@@ -17,14 +17,6 @@ export default function VideoModal({ imdbId, title, onClose, onBack }: VideoModa
   const handleIframeLoad = () => {
     setIsLoading(false)
   }
-
-  useEffect(() => {
-    // Cleanup function
-    return () => {
-      setIsLoading(true)
-      setIsFullscreen(false)
-    }
-  }, [])
 
   return (
     <VideoPlayerLayout

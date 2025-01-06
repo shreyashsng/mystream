@@ -7,12 +7,20 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const { signIn } = useAuth()
+  const { signIn, signInWithGoogle } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       await signIn(email, password)
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An error occurred')
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle()
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     }
@@ -29,6 +37,29 @@ export default function Login() {
             Sign in to your account
           </h2>
         </div>
+
+        {/* Google Sign In Button */}
+        <div>
+          <button
+            onClick={handleGoogleSignIn}
+            className="w-full py-3 px-4 rounded-lg bg-white hover:bg-gray-100 
+                   text-gray-900 font-semibold transition-colors duration-200
+                   flex items-center justify-center gap-2"
+          >
+            <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
+            Continue with Google
+          </button>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-white/10"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-gray-900/50 text-gray-400">Or continue with</span>
+          </div>
+        </div>
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="text-red-500 text-center text-sm">{error}</div>
@@ -69,8 +100,11 @@ export default function Login() {
           </div>
         </form>
 
-        <p className="text-sm text-gray-400 text-center">
-          Don&apos;t have an account? <Link href="/signup" className="text-red-600 hover:underline">Sign up</Link>
+        <p className="text-center text-gray-400">
+          Don't have an account?{' '}
+          <Link href="/signup" className="text-red-600 hover:text-red-500">
+            Sign up
+          </Link>
         </p>
       </div>
     </div>

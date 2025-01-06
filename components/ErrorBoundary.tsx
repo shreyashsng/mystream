@@ -14,8 +14,7 @@ class ErrorBoundary extends Component<Props, State> {
     hasError: false
   }
 
-  public static getDerivedStateFromError(error: Error): State {
-    console.error('Static error handler:', error)
+  public static getDerivedStateFromError(_: Error): State {
     return { hasError: true }
   }
 
@@ -26,11 +25,14 @@ class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 
+                      flex items-center justify-center p-4">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">Something went wrong</h2>
+            <h1 className="text-2xl font-bold text-white mb-4">
+              Oops, something went wrong!
+            </h1>
             <button
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="px-4 py-2 bg-red-600 text-white rounded-lg"
               onClick={() => this.setState({ hasError: false })}
             >
               Try again

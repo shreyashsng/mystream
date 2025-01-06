@@ -3,16 +3,24 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 
-export default function SignUp() {
+export default function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const { signUp } = useAuth()
+  const { signUp, signInWithGoogle } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       await signUp(email, password)
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An error occurred')
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle()
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     }
@@ -29,6 +37,29 @@ export default function SignUp() {
             Create your account
           </h2>
         </div>
+
+        {/* Google Sign In Button */}
+        <div>
+          <button
+            onClick={handleGoogleSignIn}
+            className="w-full py-3 px-4 rounded-lg bg-white hover:bg-gray-100 
+                   text-gray-900 font-semibold transition-colors duration-200
+                   flex items-center justify-center gap-2"
+          >
+            <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
+            Continue with Google
+          </button>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-white/10"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-gray-900/50 text-gray-400">Or continue with</span>
+          </div>
+        </div>
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="text-red-500 text-center text-sm">{error}</div>
@@ -64,7 +95,7 @@ export default function SignUp() {
               className="w-full py-3 px-4 rounded-lg bg-red-600 hover:bg-red-700 
                      text-white font-semibold transition-colors duration-200"
             >
-              Sign up
+              Create account
             </button>
           </div>
         </form>

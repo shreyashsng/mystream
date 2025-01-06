@@ -1,14 +1,13 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import VideoModal from '@/components/VideoModal'
-import { Search, History, LogOut } from 'lucide-react'
+import { Search, History, LogOut, Trash2 } from 'lucide-react'
 import { supabase } from '@/utils/supabase'
 import WatchHistoryModal from '@/components/WatchHistoryModal'
 import TVShowModal from '@/components/TVShowModal'
 import { ENDPOINTS, ContentType } from '@/utils/constants'
-import Image from 'next/image'
 
 interface Movie {
   Title: string
@@ -47,30 +46,29 @@ export default function Dashboard() {
   const router = useRouter()
   const [contentType, setContentType] = useState<ContentType>('movie')
 
-  // Move the fetch functions outside useEffect for better optimization
-  const fetchSearchHistory = useCallback(async () => {
-    if (!user) return
-    
-    try {
-      setIsLoadingHistory(true)
-      const { data, error } = await supabase
-        .from('search_history')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10)
-
-      if (error) throw error
-      setSearchHistory(data || [])
-    } catch (error) {
-      console.error('Error fetching search history:', error)
-    } finally {
-      setIsLoadingHistory(false)
-    }
-  }, [user])
-
+  // Fetch search history
   useEffect(() => {
+    const fetchSearchHistory = async () => {
+      if (!user) return
+      
+      try {
+        const { data, error } = await supabase
+          .from('search_history')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(10)
+
+        if (error) throw error
+        setSearchHistory(data || [])
+      } catch (error) {
+        console.error('Error fetching search history:', error)
+      } finally {
+        setIsLoadingHistory(false)
+      }
+    }
+
     fetchSearchHistory()
-  }, [fetchSearchHistory])
+  }, [user])
 
   // Save to search history with upsert
   const saveToHistory = async (movie: Movie) => {
@@ -157,35 +155,24 @@ export default function Dashboard() {
     const searchContent = async () => {
       if (search.length < 3) {
         setMovies([])
-        setShowResults(false)
         return
       }
 
+      setIsLoading(true)
       try {
-        setIsLoading(true)
         const endpoint = contentType === 'movie' ? ENDPOINTS.MOVIE : ENDPOINTS.TV
         const response = await fetch(endpoint.SEARCH(encodeURIComponent(search)))
         const data = await response.json()
         
-        if (data.Error) {
-          setMovies([])
-          return
-        }
-        
         if (data.Search) {
           const contentWithDetails = await Promise.all(
             data.Search.map(async (item: Movie) => {
-              try {
-                const detailResponse = await fetch(endpoint.DETAILS(item.imdbID))
-                const detailData = await detailResponse.json()
-                return {
-                  ...item,
-                  Type: contentType,
-                  totalSeasons: detailData.totalSeasons
-                }
-              } catch (error) {
-                console.error('Error fetching details:', error)
-                return item
+              const detailResponse = await fetch(endpoint.DETAILS(item.imdbID))
+              const detailData = await detailResponse.json()
+              return {
+                ...item,
+                Type: contentType,
+                totalSeasons: detailData.totalSeasons
               }
             })
           )
@@ -193,7 +180,6 @@ export default function Dashboard() {
         }
       } catch (error) {
         console.error('Error fetching content:', error)
-        setMovies([])
       } finally {
         setIsLoading(false)
       }
@@ -204,20 +190,16 @@ export default function Dashboard() {
   }, [search, contentType])
 
   const handleMovieSelect = async (content: Movie | TVShow) => {
-    try {
-      if ('Type' in content && content.Type === 'series') {
-        setSelectedShow(content as TVShow)
-      } else {
-        setSelectedMovie(content)
-        setSelectedImdbId(content.imdbID)
-        setIsModalOpen(true)
-      }
-      setShowResults(false)
-      setSearch('')
-      await saveToHistory(content)
-    } catch (error) {
-      console.error('Error selecting content:', error)
+    if ('Type' in content && content.Type === 'series') {
+      setSelectedShow(content as TVShow)
+    } else {
+      setSelectedMovie(content)
+      setSelectedImdbId(content.imdbID)
+      setIsModalOpen(true)
     }
+    setShowResults(false)
+    setSearch('')
+    await saveToHistory(content)
   }
 
   const handleSignOut = async () => {
@@ -359,12 +341,10 @@ export default function Dashboard() {
                       className="flex items-center gap-4 w-full p-2 hover:bg-white/5 
                               rounded-lg transition-colors duration-200 text-left"
                     >
-                      <Image
+                      <img
                         src={item.Poster !== 'N/A' ? item.Poster : '/no-poster.png'}
                         alt={item.Title}
-                        width={96}
-                        height={128}
-                        className="object-cover rounded"
+                        className="w-12 h-16 object-cover rounded"
                       />
                       <div>
                         <h3 className="text-white font-semibold">{item.Title}</h3>
