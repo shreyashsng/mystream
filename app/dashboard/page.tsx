@@ -14,6 +14,7 @@ interface Movie {
   Year: string
   imdbID: string
   Poster: string
+  Type?: 'movie' | 'series'
 }
 
 interface SearchHistory {
@@ -352,7 +353,7 @@ export default function Dashboard() {
                           <p className="text-gray-400 text-sm">{item.Year}</p>
                           <span className="text-xs px-2 py-0.5 rounded-full 
                                         bg-gray-800 text-gray-400 capitalize">
-                            {item.Type || 'Movie'}
+                            {contentType}
                           </span>
                         </div>
                       </div>
