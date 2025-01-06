@@ -1,33 +1,23 @@
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next()
-  
-  // Update security headers to be less restrictive
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  response.headers.set('X-XSS-Protection', '1; mode=block')
-  response.headers.set(
-    'Content-Security-Policy',
-    [
-      "default-src 'self' https: http:",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' https: http: data:",
-      "media-src 'self' https: http:",
-      "frame-src 'self' https: http:",
-      "connect-src 'self' https: http:",
-    ].join('; ')
-  )
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next()
+  const supabase = createMiddlewareClient({ req, res })
 
-  return response
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  // If no session and trying to access protected routes
+  if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/', req.url))
+  }
+
+  return res
 }
 
 export const config = {
-  matcher: [
-    '/api/stream/:path*',
-    '/dashboard/:path*'
-  ]
+  matcher: ['/dashboard/:path*']
 } 

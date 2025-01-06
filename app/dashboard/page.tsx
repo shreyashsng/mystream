@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import VideoModal from '@/components/VideoModal'
@@ -46,29 +46,30 @@ export default function Dashboard() {
   const router = useRouter()
   const [contentType, setContentType] = useState<ContentType>('movie')
 
-  // Fetch search history
-  useEffect(() => {
-    const fetchSearchHistory = async () => {
-      if (!user) return
-      
-      try {
-        const { data, error } = await supabase
-          .from('search_history')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(10)
+  // Move the fetch functions outside useEffect for better optimization
+  const fetchSearchHistory = useCallback(async () => {
+    if (!user) return
+    
+    try {
+      setIsLoadingHistory(true)
+      const { data, error } = await supabase
+        .from('search_history')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10)
 
-        if (error) throw error
-        setSearchHistory(data || [])
-      } catch (error) {
-        console.error('Error fetching search history:', error)
-      } finally {
-        setIsLoadingHistory(false)
-      }
+      if (error) throw error
+      setSearchHistory(data || [])
+    } catch (error) {
+      console.error('Error fetching search history:', error)
+    } finally {
+      setIsLoadingHistory(false)
     }
-
-    fetchSearchHistory()
   }, [user])
+
+  useEffect(() => {
+    fetchSearchHistory()
+  }, [fetchSearchHistory])
 
   // Save to search history with upsert
   const saveToHistory = async (movie: Movie) => {
