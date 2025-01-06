@@ -3,11 +3,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import VideoModal from '@/components/VideoModal'
-import { Search, History, LogOut, Trash2 } from 'lucide-react'
+import { Search, History, LogOut } from 'lucide-react'
 import { supabase } from '@/utils/supabase'
 import WatchHistoryModal from '@/components/WatchHistoryModal'
 import TVShowModal from '@/components/TVShowModal'
 import { ENDPOINTS, ContentType } from '@/utils/constants'
+import Image from 'next/image'
 
 interface Movie {
   Title: string
@@ -358,10 +359,12 @@ export default function Dashboard() {
                       className="flex items-center gap-4 w-full p-2 hover:bg-white/5 
                               rounded-lg transition-colors duration-200 text-left"
                     >
-                      <img
+                      <Image
                         src={item.Poster !== 'N/A' ? item.Poster : '/no-poster.png'}
                         alt={item.Title}
-                        className="w-12 h-16 object-cover rounded"
+                        width={96}
+                        height={128}
+                        className="object-cover rounded"
                       />
                       <div>
                         <h3 className="text-white font-semibold">{item.Title}</h3>

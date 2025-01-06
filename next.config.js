@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     domains: ['m.media-amazon.com', 'img.omdbapi.com'],
+    unoptimized: process.env.NODE_ENV === 'development',
   },
   async rewrites() {
     return [
